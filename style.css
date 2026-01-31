@@ -1,0 +1,50 @@
+body {
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  background: #f4f4f4;
+  margin: 0;
+  padding: 16px;
+  text-align: center;
+}
+
+h1 {
+  margin-bottom: 4px;
+}
+
+.hint {
+  color: #555;
+  font-size: 14px;
+}
+
+.card-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.card {
+  background: white;
+  border-radius: 14px;
+  padding: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+  cursor: pointer;
+  user-select: none;
+  touch-action: manipulation; /* ← 重要：タップ反応改善 */
+}
+
+.card img {
+  width: 100%;
+  border-radius: 12px;
+}
+
+.answer {
+  margin-top: 10px;
+  font-size: 16px;
+  font-weight: bold;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.card.active .answer {
+  opacity: 1;
+}
