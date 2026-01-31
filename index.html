@@ -1,54 +1,58 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>MHA English Flashcards</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
+const cards = document.querySelectorAll(".card");
 
-<h1>🃏 My Hero Academia – English Flashcards</h1>
-<p class="hint">Tap / Click a card to reveal the name & hear it 🔊</p>
+let japaneseVoice = null;
 
-<div class="card-container">
+// 日本語で一番やさそうな声を探す
+function loadVoices() {
+  const voices = speechSynthesis.getVoices();
 
-  <!-- Class 1-A -->
-  <div class="card" data-name="Izuku Midoriya"><img src="images/izuku-midoriya.jpg"><div class="answer">Izuku Midoriya</div></div>
-  <div class="card" data-name="Katsuki Bakugo"><img src="images/katsuki-bakugo.jpg"><div class="answer">Katsuki Bakugo</div></div>
-  <div class="card" data-name="Ochaco Uraraka"><img src="images/ochaco-uraraka.jpg"><div class="answer">Ochaco Uraraka</div></div>
-  <div class="card" data-name="Shoto Todoroki"><img src="images/shoto-todoroki.jpg"><div class="answer">Shoto Todoroki</div></div>
-  <div class="card" data-name="Tenya Iida"><img src="images/tenya-iida.jpg"><div class="answer">Tenya Iida</div></div>
-  <div class="card" data-name="Tsuyu Asui"><img src="images/tsuyu-asui.jpg"><div class="answer">Tsuyu Asui</div></div>
-  <div class="card" data-name="Denki Kaminari"><img src="images/denki-kaminari.jpg"><div class="answer">Denki Kaminari</div></div>
-  <div class="card" data-name="Eijiro Kirishima"><img src="images/eijiro-kirishima.jpg"><div class="answer">Eijiro Kirishima</div></div>
-  <div class="card" data-name="Momo Yaoyorozu"><img src="images/momo-yaoyorozu.jpg"><div class="answer">Momo Yaoyorozu</div></div>
-  <div class="card" data-name="Mina Ashido"><img src="images/mina-ashido.jpg"><div class="answer">Mina Ashido</div></div>
-  <div class="card" data-name="Fumikage Tokoyami"><img src="images/fumikage-tokoyami.jpg"><div class="answer">Fumikage Tokoyami</div></div>
-  <div class="card" data-name="Kyoka Jiro"><img src="images/kyoka-jiro.jpg"><div class="answer">Kyoka Jiro</div></div>
-  <div class="card" data-name="Hanta Sero"><img src="images/hanta-sero.jpg"><div class="answer">Hanta Sero</div></div>
-  <div class="card" data-name="Rikido Sato"><img src="images/rikido-sato.jpg"><div class="answer">Rikido Sato</div></div>
-  <div class="card" data-name="Mezo Shoji"><img src="images/mezo-shoji.jpg"><div class="answer">Mezo Shoji</div></div>
-  <div class="card" data-name="Yuga Aoyama"><img src="images/yuga-aoyama.jpg"><div class="answer">Yuga Aoyama</div></div>
-  <div class="card" data-name="Koji Koda"><img src="images/koji-koda.jpg"><div class="answer">Koji Koda</div></div>
-  <div class="card" data-name="Mashirao Ojiro"><img src="images/mashirao-ojiro.jpg"><div class="answer">Mashirao Ojiro</div></div>
-  <div class="card" data-name="Minoru Mineta"><img src="images/minoru-mineta.jpg"><div class="answer">Minoru Mineta</div></div>
-  <div class="card" data-name="Toru Hagakure"><img src="images/toru-hagakure.jpg"><div class="answer">Toru Hagakure</div></div>
+  japaneseVoice = voices.find(v =>
+    v.lang === "ja-JP" &&
+    (v.name.includes("Kyoko") ||
+     v.name.includes("Otoya") ||
+     v.name.includes("Google") ||
+     v.name.includes("Japanese"))
+  ) || voices.find(v => v.lang === "ja-JP");
+}
 
-  <!-- Teachers / Heroes -->
-  <div class="card" data-name="All Might"><img src="images/all-might.jpg"><div class="answer">All Might</div></div>
-  <div class="card" data-name="Shota Aizawa"><img src="images/shota-aizawa.jpg"><div class="answer">Shota Aizawa</div></div>
-  <div class="card" data-name="Present Mic"><img src="images/present-mic.jpg"><div class="answer">Present Mic</div></div>
-  <div class="card" data-name="Endeavor"><img src="images/endeavor.jpg"><div class="answer">Endeavor</div></div>
+// iOS / Safari 対応
+speechSynthesis.onvoiceschanged = loadVoices;
+loadVoices();
 
-  <!-- Villains -->
-  <div class="card" data-name="Tomura Shigaraki"><img src="images/tomura-shigaraki.jpg"><div class="answer">Tomura Shigaraki</div></div>
-  <div class="card" data-name="Dabi"><img src="images/dabi.jpg"><div class="answer">Dabi</div></div>
-  <div class="card" data-name="Himiko Toga"><img src="images/himiko-toga.jpg"><div class="answer">Himiko Toga</div></div>
-  <div class="card" data-name="All For One"><img src="images/all-for-one.jpg"><div class="answer">All For One</div></div>
+cards.forEach(card => {
+  const name = card.dataset.name;
 
-</div>
+  const speakName = () => {
+    if (!window.speechSynthesis) return;
 
-<script src="script.js"></script>
-</body>
-</html>
+    window.speechSynthesis.cancel();
+
+    const utter = new SpeechSynthesisUtterance(name);
+
+    // 🔑 ここが最重要
+    utter.lang = "ja-JP";      // 日本語発音
+    utter.rate = 0.8;          // ゆっくり
+    utter.pitch = 0.95;        // やさしく
+    utter.volume = 1.0;
+
+    if (japaneseVoice) {
+      utter.voice = japaneseVoice;
+    }
+
+    window.speechSynthesis.speak(utter);
+  };
+
+  const activate = () => {
+    card.classList.toggle("active");
+    speakName();
+  };
+
+  // クリック
+  card.addEventListener("click", activate);
+
+  // タップ（iOS安定化）
+  card.addEventListener("touchend", (e) => {
+    e.preventDefault();
+    activate();
+  });
+});
